@@ -33,8 +33,8 @@ def display_3D_heatmap(df):
 	# z = df
 	X, Y = np.meshgrid(x, y)
 
-	print(len(x))
-	print(len(y))
+	# print(len(x))
+	# print(len(y))
 	
 
 
@@ -48,13 +48,22 @@ def display_3D_heatmap(df):
 	# Z = np.tile(DataAll1D[:,2], (len(DataAll1D[:,2]), 1))
 
 	Z = df
-	print(len(Z))
+	# print(len(Z))
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection='3d')
 
+	print("Color schemes: viridis, plasma, inferno, magma, cividis, Greys, Blues, Purples, binary, none")
+	print("For more color scheme options, refer to https://matplotlib.org/stable/users/explain/colors/colormaps.html")
+	press = input("Choose a press: ")
+
+	if press == "none":
+		ax.plot_surface(X, Y, Z)
+	else:	
+		ax.plot_surface(X, Y, Z, cmap=press)
+
 	# for other color options, try between viridis, plasma, inferno, magma, cividis 
-	ax.plot_surface(X, Y, Z, cmap='plasma')
+	# ax.plot_surface(X, Y, Z, cmap='cividis')
 
 	# for single colors, use Greys, Blues, Purples, etc.
 	# ax.plot_surface(X, Y, Z, cmap='Reds')
