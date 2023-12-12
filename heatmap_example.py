@@ -9,6 +9,9 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+import matplotlib.colors as colors
+import matplotlib.cm as cm
+
 def load_data():
 	data = pd.read_csv("export.csv")
 	# print(sorted(data['WAFER_ROW'].unique()))
@@ -28,79 +31,53 @@ def count_die(data, press=None, color=None ):
 
 def display_3D_heatmap(df):
 
-	x = df.columns
-	y = df.index
-	# z = df
-	X, Y = np.meshgrid(x, y)
+	data_array = np.array(df)
 
-	# print(len(x))
-	# print(len(y))
-	
-
-
-	# DataAll1D = np.loadtxt("test_data.csv", delimiter=",", skiprows=1)
-	# create 2d x,y grid (both X and Y will be 2d)
-	# X, Y = np.meshgrid(DataAll1D[:,0], DataAll1D[:,1])
-
-	# Z = np.tile(df, (len(df), 1))
-
-	# repeat Z to make it a 2d grid
-	# Z = np.tile(DataAll1D[:,2], (len(DataAll1D[:,2]), 1))
-
-	Z = df
-	# print(len(Z))
+	x_data, y_data = np.meshgrid(np.arange(data_array.shape[1]), np.arange(data_array.shape[0]))
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection='3d')
 
-	print("Color schemes: viridis, plasma, inferno, magma, cividis, Greys, Blues, Purples, binary, none")
-	print("For more color scheme options, refer to https://matplotlib.org/stable/users/explain/colors/colormaps.html")
-	press = input("Choose a press: ")
+	# Time permitting, add in buttons to pick between die colors and different presses
+
+	# Title
+	plt.title('Printing Press Dies')
+
+	# Axes labels
+	ax.set_xlabel('Wafer Row')
+	ax.set_ylabel('Wafer Column')
+	ax.set_zlabel('Die Count')
+
+	x_data = x_data.flatten()
+	y_data = y_data.flatten()
+	z_data = data_array.flatten()
+
+	print("Color schemes: roygbiv, viridis, plasma, inferno, magma, cividis, Greys, Blues, Purples, binary, none")
+	press = input("For more color scheme options, refer to https://matplotlib.org/stable/users/explain/colors/colormaps.html: ")
 
 	if press == "none":
-		ax.plot_surface(X, Y, Z)
+		ax.bar3d(x_data, y_data, np.zeros(len(z_data)), 1, 1, z_data)
 	else:	
-		ax.plot_surface(X, Y, Z, cmap=press)
 
-	# for other color options, try between viridis, plasma, inferno, magma, cividis 
-	# ax.plot_surface(X, Y, Z, cmap='cividis')
+		if(press == "roygbiv"):
+			# Adds full range of color 
+			offset = z_data + np.abs(z_data.min())
+			fracs = offset.astype(float)/offset.max()
+			norm = colors.Normalize(fracs.min(), fracs.max())
+			colored = cm.jet(norm(fracs))
 
-	# for single colors, use Greys, Blues, Purples, etc.
-	# ax.plot_surface(X, Y, Z, cmap='Reds')
-
-	# greyscale
-	# ax.plot_surface(X, Y, Z, cmap='binary')
-
-	# "no color"
-	# ax.plot_surface(X, Y, Z)
-
-	plt.show()
+		else:
+			# Old color schemes
+			cmap = cm.get_cmap(press)
+			norm = colors.Normalize(vmin=min(z_data), vmax=max(z_data))
+			colored = cmap(norm(z_data))
 
 
+		ax.bar3d(x_data, y_data, np.zeros(len(z_data)), 1, 1, z_data, color=colored )
 
-def display_2D_heatmap(df):
-	
-	x = df.columns
-	y = df.index
-	z = df
-	X, Y = np.meshgrid(x, y)
-
-	fig, ax = plt.subplots()
-	hm = sn.heatmap(data = df, cmap="hot")
-
-	# rax = ax.inset_axes([0.0, 0.0, 0.12, 0.2])
-	# check = CheckButtons(
-	#     ax=rax,
-	#     labels=["One", "Two", "Three"],
-	#     actives=[True, False, True]
-	# )
-    
-	# def callback(label):
-	#     pass
-
-	# check.on_clicked(callback)
 
 	plt.show()
+
 
 
 def main():
