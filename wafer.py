@@ -169,10 +169,19 @@ def display_3D_heatmap(df):
 
 def main():
     data = load_data()
-    # matplot_only_heatmap(data)
-    rows = sorted(data['WAFER_ROW'].unique())
-    cols = sorted(data['WAFER_COLUMN'].unique())
-    display_3D_heatmap(count_die(data, rows, cols))
+    vistype = 0
+    while(vistype not in ["1", "2"]):
+        vistype = input("Which type of visualization? 1) 3-D 2) flat: ")
+        if vistype == "1":
+            rows = sorted(data['WAFER_ROW'].unique())
+            cols = sorted(data['WAFER_COLUMN'].unique())
+            display_3D_heatmap(count_die(data, rows, cols))
+            return
+        elif vistype == "2":
+            matplot_only_heatmap(data)
+            return
+        else:
+            print("Please make a valid selection.")
 
 if __name__ == "__main__":
     main()
