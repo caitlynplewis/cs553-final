@@ -143,7 +143,7 @@ def display_3D_heatmap(df):
 
     ############# Radio Button for colormap
     ax_radio = plt.axes([0.0, 0.0, 0.15, 0.25])
-    labels = ["roygbiv", "none", "viridis", "hot", "plasma", "inferno", "magma", "cividis", "Greys", "Blues", "Purples" ]
+    labels = ["none", "roygbiv", "viridis", "hot", "plasma", "inferno", "magma", "cividis", "Greys", "Blues", "Purples" ]
     color_button = RadioButtons(ax_radio, labels, activecolor='black')
     def select_color(label):
         if label == "none":
