@@ -40,6 +40,9 @@ def clear_annotations(annots):
 
 def matplot_only_heatmap(data):
     fig, ax = plt.subplots()
+    ax.set_title('Printing Press Die Source Location')
+    ax.set_xlabel('Wafer Column')
+    ax.set_ylabel('Wafer Row')
     _ , active_colors = subset_data(data)
     active_presses = data['WP_NAME'].unique().tolist()
     rows = sorted(data['WAFER_ROW'].unique())
