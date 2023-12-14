@@ -3,6 +3,8 @@ import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, RadioButtons, CheckButtons
+import matplotlib.colors as colors
+import matplotlib.cm as cm
 
 def load_data():
     data = pd.read_csv("export.csv")
@@ -121,10 +123,56 @@ def filter_for_color(subsets, subset_visible):
             active_subsets.append(subsets[k])
     return active_subsets
 
+def display_3D_heatmap(df):
+    data_array = np.array(df)
+    x_data, y_data = np.meshgrid(np.arange(data_array.shape[1]), np.arange(data_array.shape[0]))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    plt.title('Printing Press Die Source Location')
+
+    # Axes labels
+    ax.set_xlabel('Wafer Row')
+    ax.set_ylabel('Wafer Column')
+    ax.set_zlabel('Die Count')
+
+    x_data = x_data.flatten()
+    y_data = y_data.flatten()
+    z_data = data_array.flatten()
+
+    ############# Radio Button for colormap
+    ax_radio = plt.axes([0.0, 0.0, 0.15, 0.25])
+    labels = ["roygbiv", "none", "viridis", "hot", "plasma", "inferno", "magma", "cividis", "Greys", "Blues", "Purples" ]
+    color_button = RadioButtons(ax_radio, labels, activecolor='black')
+    def select_color(label):
+        if label == "none":
+            ax.bar3d(x_data, y_data, np.zeros(len(z_data)), 1, 1, z_data)
+        else:
+            if(label == "roygbiv"):
+                # Adds full range of color 
+                offset = z_data + np.abs(z_data.min())
+                fracs = offset.astype(float)/offset.max()
+                norm = colors.Normalize(fracs.min(), fracs.max())
+                colored = cm.jet(norm(fracs))
+            else:
+                # Old color schemes
+                cmap = cm.get_cmap(label)
+                norm = colors.Normalize(vmin=min(z_data), vmax=max(z_data))
+                colored = cmap(norm(z_data))
+            ax.bar3d(x_data, y_data, np.zeros(len(z_data)), 1, 1, z_data, color=colored )
+        fig.canvas.draw()
+
+    color_button.on_clicked(select_color)
+
+    plt.show()
+
 def main():
     data = load_data()
-    matplot_only_heatmap(data)
-
+    # matplot_only_heatmap(data)
+    rows = sorted(data['WAFER_ROW'].unique())
+    cols = sorted(data['WAFER_COLUMN'].unique())
+    display_3D_heatmap(count_die(data, rows, cols))
 
 if __name__ == "__main__":
     main()
